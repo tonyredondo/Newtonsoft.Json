@@ -1,0 +1,57 @@
+name: .NET
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        working-directory: ./Src
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET 2.1
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 2.1.x
+
+    - name: Setup .NET 3.1
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 3.1.x
+
+    - name: Setup .NET 5
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Setup .NET 6
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Install dd-trace
+      run: dotnet tool update dd-trace -g --add-source ../
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Test With ITR
+      run: dd-trace ci run -- dotnet test --no-build --verbosity normal
+      env:
+        DD_CIVISIBILITY_AGENTLESS_ENABLED: 1
+        DD_CIVISIBILITY_ITR_ENABLED: 1
+        DD_SITE: datad0g.com
+        DD_API_KEY: ${{ secrets.DD_API_KEY }}
+        DD_APPLICATION_KEY: ${{ secrets.DD_APPLICATION_KEY }}
