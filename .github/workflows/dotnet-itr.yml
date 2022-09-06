@@ -1,4 +1,4 @@
-name: .NET
+name: .NET with ITR
 
 on:
   push:
@@ -10,6 +10,15 @@ jobs:
   build:
 
     runs-on: windows-latest
+
+    env:
+      DD_CIVISIBILITY_AGENTLESS_ENABLED: 1
+      DD_CIVISIBILITY_ITR_ENABLED: 1
+      DD_SITE: datad0g.com
+      DD_API_KEY: ${{ secrets.DD_API_KEY }}
+      DD_APPLICATION_KEY: ${{ secrets.DD_APPLICATION_KEY }}
+      DD_ENV: ci
+      DD_SERVICE: JSON.NET
 
     defaults:
       run:
@@ -41,17 +50,8 @@ jobs:
     - name: Install dd-trace
       run: dotnet tool update dd-trace -g --add-source ../
 
-    - name: Restore dependencies
-      run: dotnet restore
-
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build
 
     - name: Test With ITR
       run: dd-trace ci run -- dotnet test --no-build --verbosity normal
-      env:
-        DD_CIVISIBILITY_AGENTLESS_ENABLED: 1
-        DD_CIVISIBILITY_ITR_ENABLED: 1
-        DD_SITE: datad0g.com
-        DD_API_KEY: ${{ secrets.DD_API_KEY }}
-        DD_APPLICATION_KEY: ${{ secrets.DD_APPLICATION_KEY }}
