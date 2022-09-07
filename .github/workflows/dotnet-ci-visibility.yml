@@ -1,4 +1,4 @@
-name: .NET with ITR
+name: .NET with CI Visibility
 
 on:
   push:
@@ -13,12 +13,11 @@ jobs:
 
     env:
       DD_CIVISIBILITY_AGENTLESS_ENABLED: 1
-      DD_CIVISIBILITY_ITR_ENABLED: 1
       DD_SITE: datad0g.com
       DD_API_KEY: ${{ secrets.DD_API_KEY }}
       DD_APPLICATION_KEY: ${{ secrets.DD_APPLICATION_KEY }}
       DD_ENV: ci
-      DD_SERVICE: JSON.NET ITR
+      DD_SERVICE: JSON.NET CI VISIBILITY
 
     defaults:
       run:
